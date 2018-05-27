@@ -152,6 +152,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:
 		OnKeyDown(hWnd,wParam);
 		break;
+	case WM_TIMER:
+		OnTimer(wParam);
+		
+		break;
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
