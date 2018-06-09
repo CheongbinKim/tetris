@@ -14,8 +14,8 @@ void OnTimer(WPARAM wParam);
 int Check(int rotation, int sx, int sy);
 
 
-#define RECT_WIDTH 15
-#define RECT_HEIGHT 15
+#define RECT_WIDTH 20
+#define RECT_HEIGHT 20
 
 #define SIZE_WIDTH 10
 #define SIZE_HEIGHT 20
@@ -36,7 +36,7 @@ int Check(int rotation, int sx, int sy);
 HWND mHwnd;
 HINSTANCE mInst;
 int rot = 1;
-int block_shape = block_Z;
+int block_shape = rand()%7;
 int block[7][4][4][4] = {
 		{
 			{
@@ -265,6 +265,17 @@ void OnDraw(HDC hdc)
 				SelectObject(hdc, oBrush);
 				DeleteObject(hBrush);
 			}
+			if ((y == SIZE_HEIGHT+1))
+			{
+				HBRUSH hBrush, oBrush;
+				hBrush = CreateSolidBrush(RGB(0, 0, 0));
+				oBrush = (HBRUSH)SelectObject(hdc, hBrush);
+				Rectangle(hdc, RECT_WIDTH * x, RECT_HEIGHT *y, RECT_WIDTH*(x + 1), RECT_HEIGHT * (y + 1));
+
+
+				SelectObject(hdc, oBrush);
+				DeleteObject(hBrush);
+			}
 		}
 	}
 
@@ -325,7 +336,7 @@ void OnKeyDown(HWND hWnd,WPARAM wParam)
 	case VK_DOWN:
 		if (Check(rot, gx, gy + 1) == 0)
 		{
-			gy += 2;
+			gy ++;
 		}
 		break;
 	case VK_UP:
@@ -366,31 +377,52 @@ void OnTimer(WPARAM wParam)
 			gy = 1;
 
 			// ¡Ÿ√º≈©
-			int check = 0;
-			for (int y = 0; y < SIZE_HEIGHT + 2; y++)
+			int arr[4] = { 0 };
+			for (int y = SIZE_HEIGHT; y >= 0; y--)
 			{
-				for (int x = 0; x < SIZE_WIDTH + 2; x++)
+				int check_line = 0;
+				int a = 0;
+				for (int x = 1; x <= SIZE_WIDTH; x++)
 				{
-					if (map[y][x] > 0)
+					if (map[y][x] == 2)
 					{
-						check++;
+						check_line++;
 					}
-					if (check == SIZE_WIDTH + 2)
+					if (check_line == SIZE_WIDTH)
 					{
-						for (int check_y = y; check_y > 0; y--)
-						{
-							for (int x = 1; x < SIZE_WIDTH + 1; x++)
-							{
-								map[y + 1][x] = map[y][x];
-							}
-						}
+						arr[a] = y;
+						a++;
 					}
-					check = 0;
 				}
 			}
+			for (int i = 0; i < 4; i++)
+			{
+				for (int check_x = 1; check_x < SIZE_WIDTH + 1; check_x++)
+				{
+					map[check_x][arr[i]] = map[check_x][arr[i] - 1];
+					//for (int j = i + 1; j < 4; j++)
+					//{
+					//	arr[j]++;
+					//}
+				}
+			}
+
 		}
 		break;
 	}
+	for (int y = 0; y < 4; y++)
+	{
+		for (int x = 0; x < 4; x++)
+		{
+			if (block[block_shape][rot][y][x] < 0)
+			{
+				exit(0);
+
+				break;
+			}
+		}
+	}
+	
 	InvalidateRect(mHwnd, NULL, true);
 
 }
@@ -413,6 +445,7 @@ int Check(int rotation, int sx, int sy)
 		}
 	}
 	return 0;*/
+
 	for (int y = 0; y < 4; y++)
 	{
 		for (int x = 0; x < 4; x++)
